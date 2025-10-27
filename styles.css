@@ -1,0 +1,25 @@
+/* Estilos para asegurar que las secciones de gráficos tengan un tamaño adecuado */
+:root {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Contenedor del canvas para gestionar su altura */
+.canvas-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+}
+
+/* Asegurar que las tarjetas de estadísticas tengan un ancho mínimo para el grid */
+.stats-grid > div {
+    min-width: 150px;
+}
+
+/* Clase para un efecto visual al pasar el ratón sobre las tarjetas de estadísticas */
+.stat-card {
+    transition: all 0.2s;
+}
+.stat-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}

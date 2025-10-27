@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Datos por País y Año</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <!-- Carga de estilos personalizados -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 min-h-screen p-4 sm:p-8">
+
+    <div id="loadingMessage" class="fixed inset-0 bg-white bg-opacity-70 flex items-center justify-center z-50">
+        <div class="text-xl font-semibold text-indigo-600">Cargando datos...</div>
+    </div>
+
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-10 p-6 bg-white shadow-lg rounded-xl">
+            <h1 class="text-4xl font-extrabold text-indigo-800">Análisis de Datos Financieros por País</h1>
+            <p class="text-gray-600 mt-2">Plataforma interactiva para estadísticas y visualizaciones de series de tiempo.</p>
+        </header>
+
+        <!-- Controles Principales -->
+        <section class="mb-8 p-6 bg-white shadow-lg rounded-xl">
+            <h2 class="text-2xl font-bold text-indigo-700 mb-4">Selector de Análisis</h2>
+
+            <!-- Selector de Modo -->
+            <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                <label class="inline-flex items-center text-gray-700">
+                    <input type="radio" name="mode" value="single" checked class="form-radio text-indigo-600" onchange="switchMode('single')">
+                    <span class="ml-2">Análisis de País Único</span>
+                </label>
+                <label class="inline-flex items-center text-gray-700">
+                    <input type="radio" name="mode" value="compare" class="form-radio text-indigo-600" onchange="switchMode('compare')">
+                    <span class="ml-2">Comparación (País/Año)</span>
+                </label>
+            </div>
+
+            <!-- Controles para MODO ÚNICO -->
+            <div id="singleModeControls">
+                <label for="countrySelect" class="block text-sm font-medium text-gray-700 mb-2">Buscador de país:</label>
+                <select id="countrySelect" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" onchange="updateDashboard()"></select>
+            </div>
+
+            <!-- Controles para MODO COMPARACIÓN -->
+            <div id="compareModeControls" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Selección 1</h3>
+                    <label for="compareType1" class="block text-sm font-medium text-gray-700 mb-2">Tipo de comparación:</label>
+                    <select id="compareType1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 mb-3" onchange="updateComparisonControls(1)">
+                        <option value="country">Comparar País</option>
+                        <option value="year">Comparar Año</option>
+                    </select>
+                    <div id="compareValueContainer1">
+                        <!-- País/Año selector se inserta aquí por JS -->
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Selección 2</h3>
+                    <label for="compareType2" class="block text-sm font-medium text-gray-700 mb-2">Tipo de comparación:</label>
+                    <select id="compareType2" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 mb-3" onchange="updateComparisonControls(2)">
+                        <option value="country">Comparar País</option>
+                        <option value="year">Comparar Año</option>
+                    </select>
+                    <div id="compareValueContainer2">
+                        <!-- País/Año selector se inserta aquí por JS -->
+                    </div>
+                </div>
+                <button onclick="updateComparison()" class="md:col-span-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out mt-4">
+                    Realizar Comparación
+                </button>
+            </div>
+        </section>
+
+        <!-- Área de Indicadores de Estadística Básica -->
+        <section id="statsSection" class="mb-10 p-6 bg-white shadow-lg rounded-xl">
+            <h2 class="text-2xl font-bold text-indigo-700 mb-4" id="statsTitle">Estadísticas Clave</h2>
+            <div id="statsGrid" class="stats-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
+                <!-- Tarjetas de estadísticas se insertarán aquí por JS -->
+            </div>
+        </section>
+
+        <!-- Área de Visualización de Gráficos -->
+        <section id="chartsSection" class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <!-- Gráfico de Dispersión (Scatter Plot) -->
+            <div class="p-6 bg-white shadow-lg rounded-xl">
+                <h2 class="text-xl font-bold text-indigo-700 mb-4">Gráfico de Dispersión (Serie Temporal/Comparativa)</h2>
+                <div class="canvas-container">
+                    <canvas id="scatterChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Histograma -->
+            <div class="p-6 bg-white shadow-lg rounded-xl">
+                <h2 class="text-xl font-bold text-indigo-700 mb-4">Histograma (Distribución de Valores)</h2>
+                <div class="canvas-container">
+                    <canvas id="histogramChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Área de Mensajes de Error/Información -->
+        <div id="messageBox" class="mt-8 p-4 text-center text-sm rounded-lg text-indigo-800 bg-indigo-100 hidden"></div>
+    </div>
+
+    <!-- Carga de la lógica JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
